@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jira Maintenance Priorities</title>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <style>
+  #sortable1, #sortable2, #sortable3, #sortable4{
+    border: 1px solid #eee;
+    width: 142px;
+    min-height: 200px;
+    list-style-type: none;
+    margin: 0;
+    padding: 5px 0 0 0;
+    float: left;
+    margin-right: 10px;
+  }
+  #sortable1 {
+    background-color: blue;
+  }
+  #sortable2 {
+    background-color: green;
+  }
+  #sortable3 {
+    background-color: yellow;
+  }
+  #sortable4 {
+    background-color: red;
+  }
+  #sortable1 li, #sortable2 li, #sortable3 li, #sortable4 li {
+    margin: 0 5px 5px 5px;
+    padding: 5px;
+    font-size: 1.2em;
+    width: 120spx;
+  }
+  </style>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+  $( function() {
+    $( "#sortable1, #sortable2, #sortable3, #sortable4" ).sortable({
+      connectWith: ".connectedSortable"
+    }).disableSelection();
+  } );
+
+  function submit(){
+    var priorities_list = [
+      $( "#sortable2" ).sortable( "toArray" ).toSource(),
+      $( "#sortable3" ).sortable( "toArray" ).toSource(),
+      $( "#sortable4" ).sortable( "toArray" ).toSource()
+    ]
+    $.ajax({
+      url: '/commit-priorities',
+      type: 'POST',
+      dataType: 'json',
+      contentType: "application/json",
+      data: JSON.stringify(priorities_list)
+    })
+    //$("#btnSubmit").attr("disabled", true);
+  }
+
+
+  </script>
+
+ </head>
+ <body>
+<% project = client.Project.find('ATP') %>
+
+<ul id="sortable1" class="connectedSortable">
+  <% project.issues.each do |issue| %>
+  <li id=<%=issue.id%> class="ui-state-default"><%= issue.fields['summary'] %></li>
+  <% end %>
+</ul>
+
+<ul id="sortable2" class="connectedSortable">
+
+</ul>
+
+<ul id="sortable3" class="connectedSortable">
+
+</ul>
+
+<ul id="sortable4" class="connectedSortable">
+
+</ul>
+
+ <input type="submit" value="Submit" id="btnSubmit" onclick="submit()">
+
+</body>
+</html>
